@@ -34,7 +34,7 @@ public final class Player extends TurnOrdered {
     public static final int PLAYER_NONE = -1;
     public static final int TEAM_NONE = 0;
     public static final int TEAM_UNASSIGNED = -1;
-    public static final String[] TEAM_NAMES = {"No Team", "Team 1", "Team 2", "Team 3", "Team 4", "Team 5"};
+    protected static final String[] TEAM_NAMES = {"No Team", "Team 1", "Team 2", "Team 3", "Team 4", "Team 5"};
 
     private transient Game game;
 
@@ -455,14 +455,6 @@ public final class Player extends TurnOrdered {
                     && (bonusHQ == 0) && (entity.getHQIniBonus() > 0)) {
                     bonusHQ = entity.getHQIniBonus();
                 }
-                
-                /*
-                 * REMOVED IN IO.
-                 * if (game.getOptions().booleanOption(OptionsConstants.
-                 * RPG_MANEI_DOMINI) && (bonusMD == 0) &&
-                 * (entity.getMDIniBonus() > 0)) { bonusMD =
-                 * entity.getMDIniBonus(); }
-                 */
                 if (entity.getQuirkIniBonus() > bonusQ) {
                     //TODO: I am assuming that the quirk initiative bonuses go to the highest,
                     //rather than being cumulative
@@ -523,14 +515,12 @@ public final class Player extends TurnOrdered {
         // a vector of unit ids
         Vector<Integer> units = new Vector<>();
         for (Entity entity : game.getEntitiesVector()) {
-            if (entity.getOwner().equals(this)) {
-                if (((entity instanceof VTOL)
+                if (entity.getOwner().equals(this) &&((entity instanceof VTOL)
                      || (entity.getMovementMode() == EntityMovementMode.WIGE)) &&
                     (!entity.isDestroyed()) &&
                     (entity.getElevation() > 0)) {
                     units.add(entity.getId());
                 }
-            }
         }
         return units;
     }

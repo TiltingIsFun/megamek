@@ -66,6 +66,7 @@ public class Game implements Serializable {
 
     /**
      * Track entities removed from the game (probably by death)
+     * Track entities removed from the game (probably by death)
      */
     private Vector<Entity> vOutOfGame = new Vector<>();
 

@@ -25,7 +25,7 @@ import megamek.common.options.OptionsConstants;
 
 public class Victory implements Serializable {
     private static final long serialVersionUID = -8633873540471130320L;
-    
+
     private boolean checkForVictory;
     private int neededVictoryConditions;
 

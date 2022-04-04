@@ -25359,7 +25359,7 @@ public class Server implements Runnable {
                         weapons.add(misc);
                     }
                 }
-                if (weapons.size() > 0) {
+                if (!weapons.isEmpty()) {
                     Mounted weapon = weapons.get(Compute.randomInt(weapons.size()));
                     // possibly check for an ammo explosion
                     // don't allow ammo explosions on fighter squadrons
@@ -25880,7 +25880,7 @@ public class Server implements Runnable {
                 r.subject = tank.getId();
                 reports.add(r);
                 List<Entity> passengers = tank.getLoadedUnits();
-                if (passengers.size() > 0) {
+                if (!passengers.isEmpty()) {
                     Entity target = passengers.get(Compute.randomInt(passengers.size()));
                     hit = target.rollHitLocation(ToHitData.HIT_NORMAL, ToHitData.SIDE_FRONT);
                     reports.addAll(damageEntity(target, hit, damageCaused));
@@ -26099,7 +26099,7 @@ public class Server implements Runnable {
                         weapons.add(weapon);
                     }
                 }
-                if (weapons.size() > 0) {
+                if (!weapons.isEmpty()) {
                     Mounted weapon = weapons.get(Compute.randomInt(weapons.size()));
                     weapon.setJammed(true);
                     tank.addJammedWeapon(weapon);
@@ -27593,7 +27593,7 @@ public class Server implements Runnable {
             ArrayList<Entity> externalUnits = entity.getExternalUnits();
 
             // Handle escape of transported units.
-            if (entity.getLoadedUnits().size() > 0) {
+            if (!entity.getLoadedUnits().isEmpty()) {
                 Coords curPos = entity.getPosition();
                 int curFacing = entity.getFacing();
                 for (Entity other : entity.getLoadedUnits()) {
@@ -28500,7 +28500,7 @@ public class Server implements Runnable {
             //Extract the base from the list of modifiers so we can replace it with the piloting
             //skill of each crew member.
             List<TargetRollModifier> modifiers = new ArrayList<>(roll.getModifiers());
-            if (modifiers.size() > 0) {
+            if (!modifiers.isEmpty()) {
                 modifiers.remove(0);
             }
             for (int pos = 0; pos < entity.getCrew().getSlotCount(); pos++) {
@@ -32114,7 +32114,7 @@ public class Server implements Runnable {
      *            - The <code>Coords</code> of the building basement hex that
      *            has collapsed
      */
-    public void collapseBasement(Building bldg, Hashtable<Coords, Vector<Entity>> positionMap,
+    public void collapseBasement(Building bldg, Map<Coords, Vector<Entity>> positionMap,
                                  Coords coords, Vector<Report> vPhaseReport) {
         if (!bldg.hasCFIn(coords)) {
             return;
@@ -32223,7 +32223,7 @@ public class Server implements Runnable {
      *
      */
     public void collapseBuilding(Building bldg,
-            Hashtable<Coords, Vector<Entity>> positionMap, Coords coords,
+            Map<Coords, Vector<Entity>> positionMap, Coords coords,
             boolean collapseAll, boolean topFloor, Vector<Report> vPhaseReport) {
         // sometimes, buildings that reach CF 0 decide against collapsing
         // but we want them to go away anyway, as a building with CF 0 cannot stand
@@ -35417,7 +35417,7 @@ public class Server implements Runnable {
      * @param level    1=Light 2=Heavy Smoke 3:light LI smoke 4: Heavy LI smoke
      * @param duration duration How long the smoke will last.
      */
-    public void createSmoke(ArrayList<Coords> coords, int level, int duration) {
+    public void createSmoke(List<Coords> coords, int level, int duration) {
         SmokeCloud cloud = new SmokeCloud(coords, level, duration);
         game.addSmokeCloud(cloud);
         sendSmokeCloudAdded(cloud);
@@ -35428,7 +35428,7 @@ public class Server implements Runnable {
      *
      * @param newCoords the location to move the smoke to
      */
-    public void updateSmoke(SmokeCloud cloud, ArrayList<Coords> newCoords) {
+    public void updateSmoke(SmokeCloud cloud, List<Coords> newCoords) {
         removeSmokeTerrain(cloud);
         cloud.getCoordsList().clear();
         cloud.getCoordsList().addAll(newCoords);

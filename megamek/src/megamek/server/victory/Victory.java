@@ -29,9 +29,9 @@ public class Victory implements Serializable {
     private boolean checkForVictory;
     private int neededVictoryConditions;
 
-    private IVictoryConditions force = new ForceVictory();
-    private IVictoryConditions lastMan = new LastManStandingVictory();
-    private IVictoryConditions[] VCs = null;
+    private transient IVictoryConditions force = new ForceVictory();
+    private transient IVictoryConditions lastMan = new LastManStandingVictory();
+    private transient  IVictoryConditions[] VCs = null;
 
     public Victory(GameOptions options) {
         checkForVictory = options.booleanOption(OptionsConstants.VICTORY_CHECK_VICTORY);
@@ -115,6 +115,24 @@ public class Victory implements Serializable {
                 vr.addTeamScore(t, vr.getTeamScore(t) + res.getTeamScore(t));
             }
         }
+        
+        if (findHighScore(vr) < neededVictoryConditions) {
+            victory = false;
+        }
+        vr.setVictory(victory);
+
+        if (vr.victory()) {
+            return vr;
+        }
+
+        if (!vr.victory() && game.gameTimerIsExpired()) {
+            return VictoryResult.drawResult();
+        }
+
+        return vr;
+    }
+
+    public double findHighScore(VictoryResult vr){
         // find highscore for thresholding, also divide the score
         // to an average
         double highScore = 0.0;
@@ -132,19 +150,6 @@ public class Victory implements Serializable {
                 highScore = sc;
             }
         }
-        if (highScore < neededVictoryConditions) {
-            victory = false;
-        }
-        vr.setVictory(victory);
-
-        if (vr.victory()) {
-            return vr;
-        }
-
-        if (!vr.victory() && game.gameTimerIsExpired()) {
-            return VictoryResult.drawResult();
-        }
-
-        return vr;
+        return highScore;
     }
 }

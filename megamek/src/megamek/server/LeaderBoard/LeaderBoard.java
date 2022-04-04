@@ -2,17 +2,17 @@ package megamek.server.LeaderBoard;
 
 import megamek.common.Player;
 import java.util.ArrayList;
-
+import java.util.List;
 
 
 public class LeaderBoard {
 
     private static LeaderBoard SINGLETON;
     public LeaderBoard() {
-        leaderboard = new ArrayList<>();
+        rankings = new ArrayList<>();
     }
 
-    private final ArrayList<LeaderBoardEntry> leaderboard;
+    private final ArrayList<LeaderBoardEntry> rankings;
 
 
     public LeaderBoardEntry addRanking(Player player, int elo) {
@@ -23,15 +23,15 @@ public class LeaderBoard {
 
     }
     private void addRanking(LeaderBoardEntry e) {
-        leaderboard.add(e);
+        rankings.add(e);
     }
 
     private void sortHighscores() {
-        this.leaderboard.sort(new AscendingComparator());
+        this.rankings.sort(new AscendingComparator());
     }
     
     public LeaderBoardEntry get(Player player) {
-        for (LeaderBoardEntry leaderBoardEntry : leaderboard) {
+        for (LeaderBoardEntry leaderBoardEntry : rankings) {
             if(leaderBoardEntry.equals(player))
                 return leaderBoardEntry;
         }
@@ -40,13 +40,13 @@ public class LeaderBoard {
     }
 
 
-    public ArrayList<LeaderBoardEntry> getSortedRankings() {
+    public List<LeaderBoardEntry> getSortedRankings() {
         sortHighscores();
-        return leaderboard;
+        return rankings;
     }
 
     public void emptyBoard() {
-        leaderboard.clear();
+        rankings.clear();
     }
 
     public static LeaderBoard get() {
@@ -58,15 +58,21 @@ public class LeaderBoard {
 
 
     public void print(){
+        if(rankings.isEmpty()){
+            return;
+        }
         this.sortHighscores();
-        System.out.println("----- LEADER BORD SORTED BY HIGHEST ELO ----");
+        System.out.println("----- LEADERBOARD SORTED BY HIGHEST ELO ----");
         System.out.println("Rank # - Player - Elo Score");
 
-        for(int i = 0; i < leaderboard.size(); i++){
-            String name = leaderboard.get(i).getPlayer().getName();
-            int elo = leaderboard.get(i).getElo();
-            System.out.println(i + "-" +name + "-" +elo);
-
+        int rank = 1;
+        for (LeaderBoardEntry x: rankings
+             ) {
+            if(x.getPlayer() == null)
+                break;
+            String name = x.getPlayer().getName();
+            int elo = x.getElo();
+            System.out.println(rank++ + "-" +name + "-" +elo);
         }
     }
 }

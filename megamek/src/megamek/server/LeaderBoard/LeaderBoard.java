@@ -15,8 +15,12 @@ public class LeaderBoard {
     private final ArrayList<LeaderBoardEntry> leaderboard;
 
 
-    public void addRanking(Player player, int elo) {
-        addRanking(new LeaderBoardEntry(player,elo));
+    public LeaderBoardEntry addRanking(Player player, int elo) {
+        LeaderBoardEntry entry = new LeaderBoardEntry(player,elo);
+        addRanking(entry);
+
+        return entry;
+
     }
     private void addRanking(LeaderBoardEntry e) {
         leaderboard.add(e);
@@ -31,8 +35,10 @@ public class LeaderBoard {
             if(leaderBoardEntry.equals(player))
                 return leaderBoardEntry;
         }
-        return null;
+
+        return addRanking(player,1000);
     }
+
 
     public ArrayList<LeaderBoardEntry> getSortedRankings() {
         sortHighscores();

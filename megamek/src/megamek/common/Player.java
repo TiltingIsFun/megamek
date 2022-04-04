@@ -34,7 +34,7 @@ public final class Player extends TurnOrdered {
     public static final int PLAYER_NONE = -1;
     public static final int TEAM_NONE = 0;
     public static final int TEAM_UNASSIGNED = -1;
-    protected static final String[] TEAM_NAMES = {"No Team", "Team 1", "Team 2", "Team 3", "Team 4", "Team 5"};
+    public static final String[] TEAM_NAMES = {"No Team", "Team 1", "Team 2", "Team 3", "Team 4", "Team 5"};
 
     private transient Game game;
 

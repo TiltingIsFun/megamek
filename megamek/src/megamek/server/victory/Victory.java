@@ -31,13 +31,13 @@ public class Victory implements Serializable {
 
     private transient IVictoryConditions force = new ForceVictory();
     private transient IVictoryConditions lastMan = new LastManStandingVictory();
-    private transient  IVictoryConditions[] VCs = null;
+    private transient  IVictoryConditions[] victoryConditions = null;
 
     public Victory(GameOptions options) {
         checkForVictory = options.booleanOption(OptionsConstants.VICTORY_CHECK_VICTORY);
 
         if (checkForVictory) {
-            VCs = buildVClist(options);
+            victoryConditions = buildVClist(options);
         }
     }
 
@@ -78,8 +78,8 @@ public class Victory implements Serializable {
         // Check optional Victory conditions
         // These can have reports
         if (checkForVictory) {
-            if (VCs == null) {
-                VCs = buildVClist(game.getOptions());
+            if (victoryConditions == null) {
+                victoryConditions = buildVClist(game.getOptions());
             }
             reVal = checkOptionalVictory(game, context);
             if (reVal.victory()) {
@@ -100,7 +100,7 @@ public class Victory implements Serializable {
         VictoryResult vr = new VictoryResult(true);
 
         // combine scores
-        for (IVictoryConditions v : VCs) {
+        for (IVictoryConditions v : victoryConditions) {
             VictoryResult res = v.victory(game, context);
             for (Report r : res.getReports()) {
                 vr.addReport(r);
@@ -138,14 +138,14 @@ public class Victory implements Serializable {
         double highScore = 0.0;
         for (int pl : vr.getPlayers()) {
             double sc = vr.getPlayerScore(pl);
-            vr.addPlayerScore(pl, sc / VCs.length);
+            vr.addPlayerScore(pl, sc / victoryConditions.length);
             if (sc > highScore) {
                 highScore = sc;
             }
         }
         for (int pl : vr.getTeams()) {
             double sc = vr.getTeamScore(pl);
-            vr.addTeamScore(pl, sc / VCs.length);
+            vr.addTeamScore(pl, sc / victoryConditions.length);
             if (sc > highScore) {
                 highScore = sc;
             }

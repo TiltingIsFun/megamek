@@ -73,7 +73,7 @@ import java.util.zip.GZIPOutputStream;
  * @author Ben Mazur
  */
 public class Server implements Runnable {
-    public static final String DOMINO_EFFECT = "domino effect";
+
     public LeaderBoard lb = new LeaderBoard();
     public EloFormula eloFormula = new EloFormulaDefault();
     private static class EntityTargetPair {
@@ -312,7 +312,7 @@ public class Server implements Runnable {
      */
     public static String validateServerAddress(String serverAddress) throws AbstractCommandLineParser.ParseException {
         if ((serverAddress == null) || serverAddress.isBlank()) {
-            String msg = String.format("serverAddress must not be null or empty");
+            String msg = "serverAddress must not be null or empty";
             LogManager.getLogger().error(msg);
             throw new AbstractCommandLineParser.ParseException(msg);
         }
@@ -326,13 +326,13 @@ public class Server implements Runnable {
      */
     public static String validatePlayerName(String playerName) throws AbstractCommandLineParser.ParseException {
         if (playerName == null) {
-            String msg = String.format("playerName must not be null");
+            String msg = "playerName must not be null";
             LogManager.getLogger().error(msg);
             throw new AbstractCommandLineParser.ParseException(msg);
         }
 
         if (playerName.isBlank()) {
-            String msg = String.format("playerName must not be empty string");
+            String msg = "playerName must not be empty string";
             LogManager.getLogger().error(msg);
             throw new AbstractCommandLineParser.ParseException(msg);
         }
@@ -633,6 +633,7 @@ public class Server implements Runnable {
         try {
             serverSocket.close();
         } catch (IOException ignored) {
+            System.out.println(ignored);
         }
 
         // kill pending connections
@@ -669,8 +670,6 @@ public class Server implements Runnable {
             registerWithServerBrowser(false, metaServerUrl);
         }
 
-        // TODO : Not sure that this still needs to be here after updating to the new logging methods.
-        System.out.flush();
     }
 
     /**
@@ -724,7 +723,7 @@ public class Server implements Runnable {
             gamePlayer.setNbrMFInferno(player.getNbrMFInferno());
             if (gamePlayer.getConstantInitBonus()
                 != player.getConstantInitBonus()) {
-                sendServerChat("Player " + gamePlayer.getName()
+                sendServerChat(Constants.PLAYER + gamePlayer.getName()
                                + " changed their initiative bonus from "
                                + gamePlayer.getConstantInitBonus()
                                + " to " + player.getConstantInitBonus() + ".");
@@ -831,14 +830,12 @@ public class Server implements Runnable {
         // check if they're connecting with the same name as a ghost player
         for (Enumeration<Player> i = game.getPlayers(); i.hasMoreElements(); ) {
             Player player = i.nextElement();
-            if (player.getName().equals(name)) {
-                if (player.isGhost()) {
+            if (player.getName().equals(name) && player.isGhost()) {
                     returning = true;
                     player.setGhost(false);
                     // switch id
                     connId = player.getId();
                     conn.setId(connId);
-                }
             }
         }
 
@@ -869,7 +866,11 @@ public class Server implements Runnable {
         sendServerChat(connId, motd);
 
         // send info that the player has connected
-        transmitPlayerConnect(player);
+        try{
+            transmitPlayerConnect(player);
+        }catch(NullPointerException e){
+            System.out.println(e);
+        }
 
         // tell them their local playerId
         send(connId, new Packet(Packet.COMMAND_LOCAL_PN, connId));
@@ -1371,15 +1372,10 @@ public class Server implements Runnable {
             }
             // Check to see if this player's Id is taken
             String oldName = idToNameMap.get(p.getId());
-            if ((oldName != null) && !oldName.equals(p.getName())) {
-                // If this name doesn't belong to a current player, unassign it
-                if (!currentPlayerNames.contains(oldName)) {
-                    unassignedConns.add(connectionIds.get(p.getId()));
-                    // Make sure we don't add this to unassigned connections twice
-                    connectionIds.remove(p.getId());
-                }
-                // If it does belong to a current player, it'll get handled
-                // when that player comes up
+            if ((oldName != null) && !oldName.equals(p.getName()) && !currentPlayerNames.contains(oldName)) {
+                unassignedConns.add(connectionIds.get(p.getId()));
+                // Make sure we don't add this to unassigned connections twice
+                connectionIds.remove(p.getId());
             }
             // Keep track of what Ids are used
             usedPlayerIds.add(p.getId());
@@ -1737,7 +1733,7 @@ public class Server implements Runnable {
             }
         }
         for (Entity e : toRemove) {
-            destroyEntity(e, "crew death", false, true);
+            destroyEntity(e, Constants.CREW_DEATH, false, true);
             game.removeEntity(e.getId(), IEntityRemovalConditions.REMOVE_SALVAGEABLE);
             e.setDestroyed(true);
         }
@@ -2260,7 +2256,6 @@ public class Server implements Runnable {
                     incrementAndSendGameRound();
                 }
 
-                // setIneligible(phase);
                 determineTurnOrder(phase);
                 writeInitiativeReport(false);
 
@@ -2364,7 +2359,6 @@ public class Server implements Runnable {
                 resetActivePlayersDone();
                 setIneligible(phase);
                 determineTurnOrder(phase);
-                // send(createEntitiesPacket());
                 entityAllUpdate();
                 clearReports();
                 doTryUnstuck();
@@ -2738,15 +2732,7 @@ public class Server implements Runnable {
                 changePhase(GamePhase.INITIATIVE_REPORT);
                 break;
             case INITIATIVE_REPORT:
-                // NOTE: now that aeros can come and go from the battlefield, I
-                // need
-                // to update the
-                // deployment table every round. I think this it is OK to go
-                // here.
-                // (Taharqa)
                 game.setupRoundDeployment();
-                // boolean doDeploy = game.shouldDeployThisRound() &&
-                // (game.getLastPhase() != Game.Phase.DEPLOYMENT);
                 if (game.shouldDeployThisRound()) {
                     changePhase(GamePhase.DEPLOYMENT);
                 } else {
@@ -3167,7 +3153,7 @@ public class Server implements Runnable {
      *              be <code>null</code>.
      */
     private void sendGhostSkipMessage(Player ghost) {
-        String message = "Player '" + ghost.getName() +
+        String message =  Constants.PLAYER + ghost.getName() +
                 "' is disconnected.  You may skip his/her current turn with the /skip command.";
         sendServerChat(message);
     }
@@ -3180,7 +3166,7 @@ public class Server implements Runnable {
      *             must not be <code>null</code>.
      */
     private void sendTurnErrorSkipMessage(Player skip) {
-        String message = "Player '" + skip.getName() +
+        String message = Constants.PLAYER + skip.getName() +
                 "' has no units to move.  You should skip his/her/your current turn with the /skip command. " +
                 "You may want to report this error at https://github.com/MegaMek/megamek/issues";
         sendServerChat(message);
@@ -4797,9 +4783,9 @@ public class Server implements Runnable {
         if ((turn == null) || !turn.isValid(connId, entity, game)) {
             String msg = "error: server got invalid movement packet from " + "connection " + connId;
             if (entity != null) {
-                msg += ", Entity: " + entity.getShortName();
+                msg += Constants.ENTITY + entity.getShortName();
             } else {
-                msg += ", Entity was null!";
+                msg += Constants.ENTITY_NULL;
             }
             LogManager.getLogger().error(msg);
             return;
@@ -5103,6 +5089,8 @@ public class Server implements Runnable {
                         case 5:
                             table = ToHitData.SIDE_RIGHT;
                             break;
+                        default:
+                            table = ToHitData.SIDE_FRONT;
                     }
                     elevation = nextElevation;
                     if (entity instanceof Tank) {
@@ -5195,6 +5183,8 @@ public class Server implements Runnable {
                         case 5:
                             table = ToHitData.SIDE_RIGHT;
                             break;
+                        default:
+                            table = ToHitData.SIDE_FRONT;
                     }
                     elevation = nextElevation;
                     addReport(crashVTOLorWiGE((VTOL) entity, false, true,
@@ -5583,7 +5573,7 @@ public class Server implements Runnable {
                     Coords targetDest = Compute.getValidDisplacement(game, entity.getId(), curPos,
                             direction);
                     addReport(doEntityDisplacement(violation, curPos, targetDest,
-                            new PilotingRollData(violation.getId(), 0, DOMINO_EFFECT)));
+                            new PilotingRollData(violation.getId(), 0, Constants.DOMINO_EFFECT)));
                     // Update the violating entity's position on the client.
                     entityUpdate(violation.getId());
                 }
@@ -6182,7 +6172,7 @@ public class Server implements Runnable {
                                 new PilotingRollData(victim.getId(), 0, "crash"));
                     } else if (!(victim instanceof Dropship)) {
                         // destroy entity - but not DropShips which are immovable
-                        addReport(destroyEntity(victim, "impossible displacement",
+                        addReport(destroyEntity(victim, Constants.IMPOSSIBLE_DISPLACEMENT,
                                 victim instanceof Mech, victim instanceof Mech));
                     }
                 }
@@ -6253,7 +6243,7 @@ public class Server implements Runnable {
                 // suffer an ammo/power plant hit.
                 // TODO : a Mech suffers a Head Blown Off crit.
                 vPhaseReport.addAll(destroyEntity(entity,
-                                                  "impossible displacement", entity instanceof Mech,
+                                                  Constants.IMPOSSIBLE_DISPLACEMENT, entity instanceof Mech,
                                                   entity instanceof Mech));
             }
         }
@@ -7961,7 +7951,7 @@ public class Server implements Runnable {
                         addReport(doEntityDisplacement(violation, curPos,
                                 targetDest,
                                 new PilotingRollData(violation.getId(), 0,
-                                        DOMINO_EFFECT)));
+                                        Constants.DOMINO_EFFECT)));
                         // Update the violating entity's position on the client.
                         entityUpdate(violation.getId());
                     }
@@ -9360,7 +9350,7 @@ public class Server implements Runnable {
                             // suffer an ammo/power plant hit.
                             // TODO : a Mech suffers a Head Blown Off crit.
                             vPhaseReport.addAll(destroyEntity(violation,
-                                    "impossible displacement",
+                                    Constants.IMPOSSIBLE_DISPLACEMENT,
                                     violation instanceof Mech,
                                     violation instanceof Mech));
                         }
@@ -12586,7 +12576,7 @@ public class Server implements Runnable {
                             // ack! automatic death! Tanks
                             // suffer an ammo/power plant hit.
                             // TODO : a Mech suffers a Head Blown Off crit.
-                            vPhaseReport.addAll(destroyEntity(violation, "impossible displacement",
+                            vPhaseReport.addAll(destroyEntity(violation, Constants.IMPOSSIBLE_DISPLACEMENT,
                                     violation instanceof Mech, violation instanceof Mech));
                         }
                     }
@@ -12614,14 +12604,14 @@ public class Server implements Runnable {
                 // suffer an ammo/power plant hit.
                 // TODO : a Mech suffers a Head Blown Off crit.
                 vPhaseReport.addAll(destroyEntity(entity,
-                        "impossible displacement", entity instanceof Mech, entity instanceof Mech));
+                        Constants.IMPOSSIBLE_DISPLACEMENT, entity instanceof Mech, entity instanceof Mech));
             }
         } else {
             // damage as normal
             vPhaseReport.addAll(doEntityFall(entity, dest, fallElevation, roll));
             Entity violation = Compute.stackingViolation(game, entity.getId(), dest);
             if (violation != null) {
-                PilotingRollData prd = new PilotingRollData(violation.getId(), 0, DOMINO_EFFECT);
+                PilotingRollData prd = new PilotingRollData(violation.getId(), 0, Constants.DOMINO_EFFECT);
                 if (violation instanceof Dropship) {
                     violation = entity;
                     prd = null;
@@ -12894,7 +12884,7 @@ public class Server implements Runnable {
                             vPhaseReport.addAll(doEntityDisplacement(violation,
                                     dest, dest.translated(direction),
                                     new PilotingRollData(violation.getId(), 0,
-                                            DOMINO_EFFECT)));
+                                            Constants.DOMINO_EFFECT)));
                         }
                     }
                 }
@@ -12905,7 +12895,7 @@ public class Server implements Runnable {
                 r.addDesc(violation);
                 vPhaseReport.add(r);
                 vPhaseReport.addAll(doEntityDisplacement(violation, dest, dest.translated(direction),
-                        new PilotingRollData(violation.getId(), 0, DOMINO_EFFECT)));
+                        new PilotingRollData(violation.getId(), 0, Constants.DOMINO_EFFECT)));
 
             }
             // Update the violating entity's position on the client,
@@ -13036,9 +13026,9 @@ public class Server implements Runnable {
             String msg = "server got invalid deployment packet from "
                          + "connection " + connId;
             if (entity != null) {
-                msg += ", Entity: " + entity.getShortName();
+                msg += Constants.ENTITY + entity.getShortName();
             } else {
-                msg += ", Entity was null!";
+                msg += Constants.ENTITY_NULL;
             }
             LogManager.getLogger().error(msg);
             send(connId, createTurnVectorPacket());
@@ -13077,9 +13067,9 @@ public class Server implements Runnable {
             String msg = "server received deployment unload packet "
                     + "outside of deployment phase from connection " + connId;
             if (loader != null) {
-                msg += ", Entity: " + loader.getShortName();
+                msg += Constants.ENTITY + loader.getShortName();
             } else {
-                msg += ", Entity was null!";
+                msg += Constants.ENTITY_NULL;
             }
             LogManager.getLogger().error(msg);
             return;
@@ -13094,9 +13084,9 @@ public class Server implements Runnable {
         if ((turn == null) || !turn.isValid(connId, loader, game)) {
             String msg = "server got invalid deployment unload packet from connection " + connId;
             if (loader != null) {
-                msg += ", Entity: " + loader.getShortName();
+                msg += Constants.ENTITY+ loader.getShortName();
             } else {
-                msg += ", Entity was null!";
+                msg += Constants.ENTITY_NULL;
             }
             LogManager.getLogger().error(msg);
             send(connId, createTurnVectorPacket());
@@ -18749,7 +18739,7 @@ public class Server implements Runnable {
                             violation.getId(), dest, direction);
                     vPhaseReport.addAll(doEntityDisplacement(violation, dest,
                             targetDest, new PilotingRollData(violation.getId(),
-                                    0, DOMINO_EFFECT)));
+                                    0, Constants.DOMINO_EFFECT)));
                     // Update the violating entity's position on the client.
                     if (!game.getOutOfGameEntitiesVector().contains(violation)) {
                         entityUpdate(violation.getId());
@@ -18759,7 +18749,7 @@ public class Server implements Runnable {
                 // attacker destroyed
                 // Tanks suffer an ammo/power plant hit.
                 // TODO : a Mech suffers a Head Blown Off crit.
-                addReport(destroyEntity(ae, "impossible displacement",
+                addReport(destroyEntity(ae, Constants.IMPOSSIBLE_DISPLACEMENT,
                         ae instanceof Mech, ae instanceof Mech));
             }
             return;
@@ -18835,7 +18825,7 @@ public class Server implements Runnable {
                 // ack! automatic death! Tanks
                 // suffer an ammo/power plant hit.
                 // TODO : a Mech suffers a Head Blown Off crit.
-                addReport(destroyEntity(te, "impossible displacement",
+                addReport(destroyEntity(te, Constants.IMPOSSIBLE_DISPLACEMENT,
                         te instanceof Mech, te instanceof Mech));
             }
 
@@ -19670,7 +19660,7 @@ public class Server implements Runnable {
                 r.subject = entity.getId();
                 r.addDesc(entity);
                 addReport(r);
-                addReport(destroyEntity(entity, "crew death", true));
+                addReport(destroyEntity(entity, Constants.CREW_DEATH, true));
             }
 
             // With MaxTech Heat Scale, there may occur critical damage
@@ -27995,7 +27985,7 @@ public class Server implements Runnable {
             vDesc.addAll(damageCrew(en, pilotDamage, en.getCrew().getCurrentPilotIndex()));
         }
         if (en.getCrew().isDoomed() || en.getCrew().isDead()) {
-            vDesc.addAll(destroyEntity(en, "crew death", true));
+            vDesc.addAll(destroyEntity(en, Constants.CREW_DEATH, true));
         } else {
             Report.addNewline(vDesc);
         }
@@ -29640,7 +29630,7 @@ public class Server implements Runnable {
                     } else {
                         Player cheater = game.getPlayer(connIndex);
                         sendServerChat(String.format(
-                                "Player %s attempted to add an illegal unit design (%s), the unit was rejected.",
+                                        Constants.PLAYER +" %s attempted to add an illegal unit design (%s), the unit was rejected.",
                                 cheater.getName(), entity.getShortNameRaw()));
                         entities.remove(entity);
                         continue;
@@ -30118,7 +30108,7 @@ public class Server implements Runnable {
         GamePhase phase = (GamePhase) c.getObject(1);
         Entity e = game.getEntity(entityId);
         if (connIndex != e.getOwnerId()) {
-            LogManager.getLogger().error("Player " + connIndex 
+            LogManager.getLogger().error(Constants.PLAYER + connIndex
                     + " tried to activate a hidden unit owned by Player " + e.getOwnerId());
             return;
         }
@@ -30233,7 +30223,7 @@ public class Server implements Runnable {
         }
         Player player = getPlayer(connIndex);
         if ((null != player) && (e.getOwner() != player)) {
-            LogManager.getLogger().error("Player " + player.getName() + " does not own the entity " + e.getDisplayName());
+            LogManager.getLogger().error(Constants.PLAYER + player.getName() + " does not own the entity " + e.getDisplayName());
             return;
         }
 
@@ -30391,7 +30381,7 @@ public class Server implements Runnable {
         if (GamePhase.INITIATIVE_REPORT != game.getPhase()) {
             StringBuilder message = new StringBuilder();
             if (null == player) {
-                message.append("Player #").append(connIndex);
+                message.append(Constants.PLAYER + "#").append(connIndex);
             } else {
                 message.append(player.getName());
             }
@@ -30443,7 +30433,7 @@ public class Server implements Runnable {
                 continue;
             }
 
-            String message = "Player " + player.getName() + " changed option \"" +
+            String message = Constants.PLAYER + player.getName() + " changed option \"" +
                     originalOption.getDisplayableName() + "\" to " + option.getValue().toString() + '.';
             sendServerChat(message);
             originalOption.setValue(option.getValue());
@@ -31363,7 +31353,7 @@ public class Server implements Runnable {
                 if (game.getPhase().isBefore(GamePhase.DEPLOYMENT)) {
                     MapSettings newSettings = (MapSettings) packet.getObject(0);
                     if (!mapSettings.equalMapGenParameters(newSettings)) {
-                        sendServerChat("Player " + player.getName() + " changed map settings");
+                        sendServerChat(Constants.PLAYER + player.getName() + " changed map settings");
                     }
                     mapSettings = newSettings;
                     mapSettings.setBoardsAvailableVector(ServerBoardHelper.scanForBoards(mapSettings));
@@ -31378,7 +31368,7 @@ public class Server implements Runnable {
                 if (game.getPhase().isBefore(GamePhase.DEPLOYMENT)) {
                     MapSettings newSettings = (MapSettings) packet.getObject(0);
                     if (!mapSettings.equalMapGenParameters(newSettings)) {
-                        sendServerChat("Player " + player.getName() + " changed map dimensions");
+                        sendServerChat(Constants.PLAYER + player.getName() + " changed map dimensions");
                     }
                     mapSettings = newSettings;
                     mapSettings.setBoardsAvailableVector(ServerBoardHelper.scanForBoards(mapSettings));
@@ -31393,7 +31383,7 @@ public class Server implements Runnable {
                 // MapSettings newSettings = (MapSettings) packet.getObject(0);
                 if (game.getPhase().isBefore(GamePhase.DEPLOYMENT)) {
                     PlanetaryConditions conditions = (PlanetaryConditions) packet.getObject(0);
-                    sendServerChat("Player " + player.getName() + " changed planetary conditions");
+                    sendServerChat(Constants.PLAYER + player.getName() + " changed planetary conditions");
                     game.setPlanetaryConditions(conditions);
                     resetPlayersDone();
                     transmitAllPlayerDones();
@@ -34840,7 +34830,7 @@ public class Server implements Runnable {
                     // ack! automatic death! Tanks
                     // suffer an ammo/power plant hit.
                     // TODO : a Mech suffers a Head Blown Off crit.
-                    vPhaseReport.addAll(destroyEntity(entity, "impossible displacement",
+                    vPhaseReport.addAll(destroyEntity(entity, Constants.IMPOSSIBLE_DISPLACEMENT,
                             entity instanceof Mech, entity instanceof Mech));
                 }
             }

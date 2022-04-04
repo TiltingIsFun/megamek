@@ -23,7 +23,7 @@ import megamek.common.Game;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.server.Server;
-import megamek.server.Server.DamageType;
+import megamek.server.ServerHelper;
 
 /**
  * @author Sebastian Brocks
@@ -35,6 +35,6 @@ public class SRMAXHandler extends SRMHandler {
         super(t, w, g, s);
         sSalvoType = " acid-head missile(s) ";
         nSalvoBonus = -2;
-        damageType = DamageType.ACID;
+        damageType = ServerHelper.DamageType.ACID;
     }
 }

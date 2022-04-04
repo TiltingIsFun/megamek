@@ -28,7 +28,7 @@ import megamek.common.Tank;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.server.Server;
-import megamek.server.Server.DamageType;
+import megamek.server.ServerHelper;
 
 public class PopUpMineLauncherHandler extends AmmoWeaponHandler {
     private static final long serialVersionUID = -6179453250580148965L;
@@ -118,7 +118,7 @@ public class PopUpMineLauncherHandler extends AmmoWeaponHandler {
                             hit,
                             damage,
                             false,
-                            ae.getSwarmTargetId() == entityTarget.getId() ? DamageType.IGNORE_PASSENGER
+                            ae.getSwarmTargetId() == entityTarget.getId() ? ServerHelper.DamageType.IGNORE_PASSENGER
                                     : damageType, false, false, throughFront,
                             underWater);
         } else {

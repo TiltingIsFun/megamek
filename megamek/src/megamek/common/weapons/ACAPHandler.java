@@ -26,7 +26,7 @@ import megamek.common.Report;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.server.Server;
-import megamek.server.Server.DamageType;
+import megamek.server.ServerHelper;
 
 /**
  * @author Andrew Hunter
@@ -139,7 +139,7 @@ public class ACAPHandler extends ACWeaponHandler {
             vPhaseReport
                     .addAll(server.damageEntity(entityTarget, hit, nDamage,
                             false, ae.getSwarmTargetId() == entityTarget
-                                    .getId() ? DamageType.IGNORE_PASSENGER
+                                    .getId() ? ServerHelper.DamageType.IGNORE_PASSENGER
                                     : damageType, false, false, throughFront,
                             underWater));
         }

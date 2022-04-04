@@ -45,7 +45,7 @@ import megamek.common.actions.WeaponAttackAction;
 import megamek.common.enums.GamePhase;
 import megamek.common.options.OptionsConstants;
 import megamek.server.Server;
-import megamek.server.Server.DamageType;
+import megamek.server.ServerHelper;
 
 public class ArtilleryBayWeaponIndirectHomingHandler extends ArtilleryBayWeaponIndirectFireHandler {
     private static final long serialVersionUID = -7243477723032010917L;
@@ -329,12 +329,12 @@ public class ArtilleryBayWeaponIndirectHomingHandler extends ArtilleryBayWeaponI
                         for (int loc = 1; loc <= ba.getTroopers(); loc++) {
                             hit.setLocation(loc);
                             vPhaseReport.addAll(server.damageEntity(entity, hit,
-                                    ratedDamage, false, DamageType.NONE, false,
+                                    ratedDamage, false, ServerHelper.DamageType.NONE, false,
                                     true, throughFront, underWater));
                         }
                     } else {
                         vPhaseReport.addAll(server.damageEntity(entity, hit,
-                                ratedDamage, false, DamageType.NONE, false, true,
+                                ratedDamage, false, ServerHelper.DamageType.NONE, false, true,
                                 throughFront, underWater));
                     }
                     server.creditKill(entity, ae);

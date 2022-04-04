@@ -644,4 +644,12 @@ public class ServerHelper {
             }
         }
     }
+
+    /**
+     * The DamageType enumeration is used for the damageEntity function.
+     */
+    public enum DamageType {
+        NONE, FRAGMENTATION, FLECHETTE, ACID, INCENDIARY, INFERNO, IGNORE_PASSENGER,
+        ANTI_TSM, ANTI_INFANTRY, NAIL_RIVET, NONPENETRATING
+    }
 }

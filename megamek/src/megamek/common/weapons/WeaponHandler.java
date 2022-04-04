@@ -22,7 +22,8 @@ import megamek.common.enums.AimingMode;
 import megamek.common.enums.GamePhase;
 import megamek.common.options.OptionsConstants;
 import megamek.server.Server;
-import megamek.server.Server.DamageType;
+import megamek.server.ServerHelper.DamageType;
+import megamek.server.ServerHelper;
 import megamek.server.SmokeCloud;
 import org.apache.logging.log4j.LogManager;
 
@@ -1561,10 +1562,10 @@ public class WeaponHandler implements AttackHandler, Serializable {
             vPhaseReport
                     .addAll(server.damageEntity(entityTarget, hit, nDamage,
                             false, ae.getSwarmTargetId() == entityTarget
-                                    .getId() ? DamageType.IGNORE_PASSENGER
+                                    .getId() ? ServerHelper.DamageType.IGNORE_PASSENGER
                                     : damageType, false, false, throughFront,
                             underWater, nukeS2S));
-            if (damageType.equals(DamageType.ANTI_TSM) && (target instanceof Mech) && entityTarget.antiTSMVulnerable()) {
+            if (damageType.equals(ServerHelper.DamageType.ANTI_TSM) && (target instanceof Mech) && entityTarget.antiTSMVulnerable()) {
                 vPhaseReport.addAll(server.doGreenSmokeDamage(entityTarget));
             }
             // for salvo shots, report that the aimed location was hit after
@@ -1768,7 +1769,7 @@ public class WeaponHandler implements AttackHandler, Serializable {
 
     // Among other things, basically a refactored Server#preTreatWeaponAttack
     public WeaponHandler(ToHitData t, WeaponAttackAction w, Game g, Server s) {
-        damageType = DamageType.NONE;
+        damageType = ServerHelper.DamageType.NONE;
         toHit = t;
         waa = w;
         game = g;

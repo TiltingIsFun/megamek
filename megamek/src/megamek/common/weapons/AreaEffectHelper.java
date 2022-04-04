@@ -15,7 +15,7 @@ package megamek.common.weapons;
 
 import megamek.common.*;
 import megamek.server.Server;
-import megamek.server.Server.DamageType;
+import megamek.server.ServerHelper;
 import org.apache.logging.log4j.LogManager;
 
 import java.util.*;
@@ -527,7 +527,7 @@ public class AreaEffectHelper {
                 if (entity.getInternal(loc) > 0) {
                     HitData hit = new HitData(loc);
                     vPhaseReport.addAll(server.damageEntity(entity, hit, hits,
-                            false, DamageType.NONE, false, false, false));
+                            false, ServerHelper.DamageType.NONE, false, false, false));
                 }
             }
         } else {
@@ -549,7 +549,7 @@ public class AreaEffectHelper {
                     vPhaseReport.addElement(r);
                 }
                 vPhaseReport.addAll(server.damageEntity(entity, hit, damageToDeal,
-                        false, DamageType.NONE, false, true, false));
+                        false, ServerHelper.DamageType.NONE, false, true, false));
                 hits -= Math.min(cluster, hits);
             }
         }
@@ -735,7 +735,7 @@ public class AreaEffectHelper {
             }
             HitData hit = entity.rollHitLocation(table, Compute.targetSideTable(position, entity));
             vDesc.addAll(server.damageEntity(entity, hit, cluster, false,
-                    DamageType.IGNORE_PASSENGER, false, true));
+                    ServerHelper.DamageType.IGNORE_PASSENGER, false, true));
             damage -= cluster;
         }
     }

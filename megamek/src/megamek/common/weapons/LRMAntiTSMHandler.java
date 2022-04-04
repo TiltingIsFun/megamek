@@ -19,7 +19,7 @@ import megamek.common.*;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.common.options.OptionsConstants;
 import megamek.server.Server;
-import megamek.server.Server.DamageType;
+import megamek.server.ServerHelper;
 
 /**
  * @author Sebastian Brocks
@@ -37,7 +37,7 @@ public class LRMAntiTSMHandler extends LRMSmokeWarheadHandler {
             Server s) {
         super(t, w, g, s);
         sSalvoType = " anti-TSM missile(s) ";
-        damageType = DamageType.ANTI_TSM;
+        damageType = ServerHelper.DamageType.ANTI_TSM;
     }
 
     /*

@@ -35,7 +35,7 @@ import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.common.options.OptionsConstants;
 import megamek.server.Server;
-import megamek.server.Server.DamageType;
+import megamek.server.ServerHelper;
 
 /**
  * @author Sebastian Brocks
@@ -185,7 +185,7 @@ public class PPCHandler extends EnergyWeaponHandler {
                 r.indent(2);
                 vPhaseReport.addElement(r);
                 Vector<Report> newReports = server.damageEntity(ae,
-                        new HitData(wlocation), 10, false, DamageType.NONE,
+                        new HitData(wlocation), 10, false, ServerHelper.DamageType.NONE,
                         true);
                 for (Report rep : newReports) {
                     rep.indent(2);

@@ -30,7 +30,7 @@ import megamek.common.Tank;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.server.Server;
-import megamek.server.Server.DamageType;
+import megamek.server.ServerHelper;
 
 /**
  * @author Jason Tighe
@@ -158,8 +158,8 @@ public class SRMTandemChargeHandler extends SRMHandler {
             vPhaseReport
                     .addAll(server.damageEntity(entityTarget, hit, nDamage,
                             false, ae.getSwarmTargetId() == entityTarget
-                                    .getId() ? DamageType.IGNORE_PASSENGER
-                                    : DamageType.NONE, false, false,
+                                    .getId() ? ServerHelper.DamageType.IGNORE_PASSENGER
+                                    : ServerHelper.DamageType.NONE, false, false,
                             throughFront, underWater));
         }
     }

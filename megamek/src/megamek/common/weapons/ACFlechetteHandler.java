@@ -24,7 +24,7 @@ import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.common.options.OptionsConstants;
 import megamek.server.Server;
-import megamek.server.Server.DamageType;
+import megamek.server.ServerHelper;
 
 /**
  * @author Andrew Hunter
@@ -41,7 +41,7 @@ public class ACFlechetteHandler extends AmmoWeaponHandler {
     public ACFlechetteHandler(ToHitData t, WeaponAttackAction w, Game g,
                               Server s) {
         super(t, w, g, s);
-        damageType = DamageType.FLECHETTE;
+        damageType = ServerHelper.DamageType.FLECHETTE;
     }
 
     /**

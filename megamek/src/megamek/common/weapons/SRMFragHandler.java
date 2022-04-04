@@ -25,7 +25,7 @@ import megamek.common.TargetRoll;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.server.Server;
-import megamek.server.Server.DamageType;
+import megamek.server.ServerHelper;
 
 /**
  * @author Sebastian Brocks
@@ -42,7 +42,7 @@ public class SRMFragHandler extends SRMHandler {
     public SRMFragHandler(ToHitData t, WeaponAttackAction w, Game g, Server s) {
         super(t, w, g, s);
         sSalvoType = " fragmentation missile(s) ";
-        damageType = DamageType.FRAGMENTATION;
+        damageType = ServerHelper.DamageType.FRAGMENTATION;
     }
 
     /**

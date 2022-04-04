@@ -43,7 +43,7 @@ public class LeaderBoardEntry {
     }
 
     public void addElo(int elo) {
-        this.elo += elo;
+        this.elo = this.elo + elo;
     }
 
     @Override

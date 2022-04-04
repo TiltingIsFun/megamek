@@ -23,10 +23,7 @@ import megamek.server.leaderBoardUtil.EloFormula;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A Victory Result stores player scores and a flag if a game-ending victory is achieved or not
@@ -229,17 +226,17 @@ public class VictoryResult {
             EloFormula eloFormula = Server.getServerInstance().eloFormula;
             LeaderBoard lb = Server.getServerInstance().lb;
 
-            LeaderBoardEntry wEntry = lb.getEntry(game.getPlayer(wonPlayer));
-            LeaderBoardEntry lEntry = lb.getEntry(game.getPlayer(lostPlayer));
+            LeaderBoardEntry wEntry = lb.get(game.getPlayer(wonPlayer));
+            LeaderBoardEntry lEntry = lb.get(game.getPlayer(lostPlayer));
 
             Player winner = wEntry.getPlayer();
             Player loser = lEntry.getPlayer();
 
+            int eloChange = eloFormula.calcElo(lb,winner,loser);
+            wEntry.addElo(eloChange);
+            lEntry.addElo(-eloChange);
 
-            wEntry.addElo(eloFormula.calcElo(lb,winner,loser));
-            lEntry.addElo(-eloFormula.calcElo(lb,winner,loser));
-
-            System.out.println(lb);
+            lb.print();
             if (wonTeam != Player.TEAM_NONE) {
                 Report r = new Report(7200, Report.PUBLIC);
                 r.add("Team " + wonTeam);
@@ -272,10 +269,7 @@ public class VictoryResult {
     }
 
     private int[] intify(Integer... ar) {
-        int[] ret = new int[ar.length];
-        for (int i = 0; i < ar.length; i++)
-            ret[i] = ar[i];
-        return ret;
+        return Arrays.stream(ar).mapToInt(i->i).toArray();
     }
 
     @Override

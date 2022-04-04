@@ -55,13 +55,7 @@ public class LeaderBoard {
         return SINGLETON;
     }
 
-    public LeaderBoardEntry getEntry(Player player) {
 
-        for(int i = 0; i < leaderboard.size(); i++){
-           if(leaderboard.get(i).getPlayer().getId() == player.getId()) return leaderboard.get(i);
-        }
-        return emptyEntry();
-    }
 
     public void print(){
         this.sortHighscores();
@@ -75,5 +69,4 @@ public class LeaderBoard {
 
         }
     }
-    private LeaderBoardEntry emptyEntry(){return new LeaderBoardEntry(new Player(0,""),0);}
 }

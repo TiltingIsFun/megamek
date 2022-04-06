@@ -32,6 +32,8 @@ public class ServerTest {
         Mockito.when(testGame.getAttacks()).thenReturn(Collections.emptyEnumeration());
         Mockito.when(testGame.getForces()).thenReturn(testForces);
         Mockito.when(testGame.getOptions()).thenReturn(new GameOptions());
+
+        Mockito.when(testGame.getPlayer(-1)).thenReturn(Mockito.mock(Player.class));
         return testGame;
     }
 
@@ -90,7 +92,6 @@ public class ServerTest {
         Mockito.when(testGame.getVictoryResult()).thenReturn(testVictoryResultTrue);
         Mockito.when(testGame.isForceVictory()).thenReturn(true);
 
-
         testServer.setGame(testGame);
         testServer.victory();
         Mockito.verify(testGame, Mockito.times(1)).cancelVictory();
@@ -102,6 +103,7 @@ public class ServerTest {
         Server testServer = new Server("test", 0);
 
         int winner = 1;
+        int loser = 2;
 
         // Mock a win victory result
         // Only 1 report should be generated as the team is set to TEAM_NONE
@@ -112,6 +114,7 @@ public class ServerTest {
         Mockito.when(victoryResult.victory()).thenReturn(true);
         Mockito.when(victoryResult.isDraw()).thenReturn(false);
         Mockito.when(victoryResult.getWinningPlayer()).thenReturn(winner);
+        Mockito.when(victoryResult.getLosingPlayer()).thenReturn(loser);
         Mockito.when(victoryResult.getWinningTeam()).thenReturn(Player.TEAM_NONE);
 
         Player mockedPlayer = Mockito.mock(Player.class);
@@ -120,6 +123,7 @@ public class ServerTest {
 
         Mockito.when(testGame.getVictoryResult()).thenReturn(victoryResult);
         Mockito.when(testGame.getPlayer(winner)).thenReturn(mockedPlayer);
+        Mockito.when(testGame.getPlayer(loser)).thenReturn(mockedPlayer);
 
         testServer.setGame(testGame);
         testServer.victory();

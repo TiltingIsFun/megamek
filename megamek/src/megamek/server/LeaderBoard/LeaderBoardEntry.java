@@ -15,16 +15,6 @@ public class LeaderBoardEntry {
         this.elo = amount;
     }
 
-    public void increment() {
-        elo++;
-    }
-
-    public LeaderBoardEntry increment(int amount) {
-        this.elo += amount;
-        return this;
-    }
-
-
     public Player getPlayer() {
         return player;
     }
@@ -32,7 +22,6 @@ public class LeaderBoardEntry {
     public Integer getElo() {
         return elo;
     }
-
 
     public LeaderBoardEntry copy() {
         return new LeaderBoardEntry(player, elo);

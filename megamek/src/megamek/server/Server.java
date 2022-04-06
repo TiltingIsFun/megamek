@@ -35408,7 +35408,7 @@ public class Server implements Runnable {
      * @param duration duration How long the smoke will last.
      */
     public void createSmoke(List<Coords> coords, int level, int duration) {
-        SmokeCloud cloud = new SmokeCloud(coords, level, duration);
+        SmokeCloud cloud = new SmokeCloud(new ArrayList<Coords>(coords), level, duration);
         game.addSmokeCloud(cloud);
         sendSmokeCloudAdded(cloud);
     }

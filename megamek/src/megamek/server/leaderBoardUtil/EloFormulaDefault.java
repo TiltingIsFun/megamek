@@ -13,8 +13,8 @@ public class EloFormulaDefault implements EloFormula {
             LeaderBoardEntry winnerEntry = lb.get(winner);
             LeaderBoardEntry loserEntry = lb.get(loser);
 
-            double eloFactor = winnerEntry.getElo() / loserEntry.getElo();
-            double elo = ( BASE_POINT * eloFactor ) ;
+            double eloFactor = (double) loserEntry.getElo() / (double) winnerEntry.getElo();
+            double elo = ( BASE_POINT * eloFactor );
             return (int)elo;
         }
 }

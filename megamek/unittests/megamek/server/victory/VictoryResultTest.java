@@ -2,10 +2,14 @@ package megamek.server.victory;
 
 import megamek.common.Game;
 import megamek.common.Player;
+import megamek.server.Server;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+
+import java.io.IOException;
 
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
@@ -63,7 +67,7 @@ public class VictoryResultTest {
     }
 
     @Test
-    public void testProcessVictory() {
+    public void testProcessVictory() throws IOException {
         // Trivial cases
         VictoryResult victoryResult = new VictoryResult(true);
 
@@ -73,6 +77,7 @@ public class VictoryResultTest {
         Game gameMock = Mockito.mock(Game.class);
         Mockito.when(gameMock.getPlayer(Mockito.anyInt())).thenReturn(playerMock);
 
+        new Server("test", 0);
         assertTrue(victoryResult.processVictory(gameMock).isEmpty());
 
         VictoryResult victoryResult2 = new VictoryResult(false);

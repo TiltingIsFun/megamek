@@ -32,7 +32,7 @@ public class LeaderBoard {
     
     public LeaderBoardEntry get(Player player) {
         for (LeaderBoardEntry leaderBoardEntry : rankings) {
-            if(leaderBoardEntry.equals(player))
+            if(leaderBoardEntry.getPlayer().equals(player))
                 return leaderBoardEntry;
         }
 

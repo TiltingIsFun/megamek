@@ -31,9 +31,8 @@ public class LeaderBoardEntry {
         this.elo = elo;
     }
 
-    public void addElo(int elo) {
-        this.elo = this.elo + elo;
-    }
+    // Elo should never be negative
+    public void addElo(int elo) { this.elo = this.elo + elo > 0 ? this.elo + elo : 1; }
 
     @Override
     public String toString() {

@@ -34,18 +34,21 @@ public class LeaderBoardEntryTest {
     @Test
     public void testAddElo() throws IOException {
         int numberToAdd = 5;
-        int startElo = 0;
+        int startElo = 10;
         Player mockedPlayer = Mockito.mock(Player.class);
 
         LeaderBoardEntry leaderBoardEntry = new LeaderBoardEntry(mockedPlayer, startElo);
 
-        assertFalse(leaderBoardEntry.getElo() == numberToAdd);
+        assertFalse(leaderBoardEntry.getElo() == startElo + numberToAdd);
 
         leaderBoardEntry.addElo(numberToAdd);
-        assertTrue(leaderBoardEntry.getElo() == numberToAdd);
+        assertTrue(leaderBoardEntry.getElo() == startElo + numberToAdd);
 
         leaderBoardEntry.addElo(-numberToAdd);
         assertTrue(leaderBoardEntry.getElo() == startElo);
+
+        leaderBoardEntry.addElo(-startElo);
+        assertTrue(leaderBoardEntry.getElo() == 1);
     }
 
     @Test
